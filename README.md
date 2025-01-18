@@ -190,22 +190,3 @@ spec:
 
    ![Screenshot of the running application](path/to/screenshot-running-application.png)
 
----
-
-## 7. Documentation
-
-1. Take screenshots of the following steps:
-   - AKS cluster creation in Azure Portal.
-   - Docker images built and pushed to ACR.
-   - Kubernetes manifests applied.
-   - Application running in the browser.
-
-2. Push all files, including the Kubernetes manifests and screenshots, to a GitHub repository.
-
----
-
-## Submission
-
-1. Push your code and documentation to a GitHub repository.
-2. Share the repository link in a Word or PDF file.
-3. Submit the file containing the repository link on Vlearn.
