@@ -9,7 +9,7 @@ This document outlines the steps to deploy the [SampleMERNwithMicroservices](htt
 1. [Prerequisites](#prerequisites)
 2. [Cloning the Application Repository](#cloning-the-application-repository)
 3. [Setting Up Azure Kubernetes Service (AKS)](#setting-up-azure-kubernetes-service-aks)
-4. [Containerizing the Application](#containerizing-the-application)
+4. [Pushing to Azure Container Registry (ACR)](#pushing-to-azure-container-registry-acr)
 5. [Creating Kubernetes Manifests](#creating-kubernetes-manifests)
 6. [Deploying to AKS](#deploying-to-aks)
 7. [Testing the Deployment](#testing-the-deployment)
@@ -85,34 +85,23 @@ cd SampleMERNwithMicroservices
 
 ---
 
-## 3. Containerizing the Application
+## 3. Pushing to Azure Container Registry (ACR)
 
-1. Create Dockerfiles for the frontend and backend components.
-
-2. Build Docker images for each service:
+1. Build and push the container images directly to Azure Container Registry (ACR):
 
    ```bash
-   docker build -t frontend ./frontend
-   docker build -t backend ./backend
+   az acr build --registry <ACR_NAME> --image mern-frontend:latest ./frontend
+   az acr build --registry <ACR_NAME> --image mern-profile-service:latest ./backend/profileService
+   az acr build --registry <ACR_NAME> --image mern-hello-service:latest ./backend/helloService
    ```
 
-3. Tag and push the images to Azure Container Registry (ACR):
+   - The `mern-frontend:latest` image was successfully built and pushed to ACR. (Refer to the first screenshot.)
+   - The `mern-profile-service:latest` image was successfully built and pushed to ACR. (Refer to the second screenshot.)
+   - The `mern-hello-service:latest` image was successfully built and pushed to ACR. (Refer to the third screenshot.)
 
-   ```bash
-   docker tag frontend <ACR_NAME>.azurecr.io/frontend
-   docker tag backend <ACR_NAME>.azurecr.io/backend
-
-   docker push <ACR_NAME>.azurecr.io/frontend
-   docker push <ACR_NAME>.azurecr.io/backend
-   ```
-
-   - The `mern-frontend:latest` Docker image was successfully built and pushed to ACR. (Refer to the first screenshot.)
-   - The `mern-profile-service:latest` Docker image was successfully built and pushed to ACR. (Refer to the second screenshot.)
-   - The `mern-hello-service:latest` Docker image was successfully built and pushed to ACR. (Refer to the third screenshot.)
-
-   ![Frontend Docker image pushed to ACR](WhatsApp%20Image%202025-01-18%20at%2010.33.50%20AM%20(1).jpeg)
-   ![Profile Service Docker image pushed to ACR](WhatsApp%20Image%202025-01-18%20at%2010.33.50%20AM.jpeg)
-   ![Hello Service Docker image pushed to ACR](WhatsApp%20Image%202025-01-18%20at%2010.33.51%20AM.jpeg)
+   ![Frontend image pushed to ACR](WhatsApp%20Image%202025-01-18%20at%2010.33.50%20AM%20(1).jpeg)
+   ![Profile Service image pushed to ACR](WhatsApp%20Image%202025-01-18%20at%2010.33.50%20AM.jpeg)
+   ![Hello Service image pushed to ACR](WhatsApp%20Image%202025-01-18%20at%2010.33.51%20AM.jpeg)
 
 ---
 
@@ -122,8 +111,10 @@ Create Kubernetes manifests for deployment and service configurations:
 
 - `frontend-deployment.yaml`
 - `frontend-service.yaml`
-- `backend-deployment.yaml`
-- `backend-service.yaml`
+- `profile-service-deployment.yaml`
+- `profile-service-service.yaml`
+- `hello-service-deployment.yaml`
+- `hello-service-service.yaml`
 
 Example for a deployment:
 
@@ -144,7 +135,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: <ACR_NAME>.azurecr.io/frontend
+        image: <ACR_NAME>.azurecr.io/mern-frontend:latest
         ports:
         - containerPort: 3000
 ```
@@ -158,8 +149,10 @@ spec:
    ```bash
    kubectl apply -f frontend-deployment.yaml
    kubectl apply -f frontend-service.yaml
-   kubectl apply -f backend-deployment.yaml
-   kubectl apply -f backend-service.yaml
+   kubectl apply -f profile-service-deployment.yaml
+   kubectl apply -f profile-service-service.yaml
+   kubectl apply -f hello-service-deployment.yaml
+   kubectl apply -f hello-service-service.yaml
    ```
 
 2. Verify the deployment:
@@ -171,8 +164,8 @@ spec:
    - The `mern-profile-service` was successfully deployed. (Refer to the fourth screenshot.)
    - The `mern-hello-service` was successfully deployed. (Refer to the fifth screenshot.)
 
-   ![Profile service deployment applied](WhatsApp%20Image%202025-01-18%20at%2010.33.51%20AM%20(1).jpeg)
-   ![Hello service deployment applied](WhatsApp%20Image%202025-01-18%20at%2010.33.51%20AM%20(2).jpeg)
+   ![Profile Service deployment applied](WhatsApp%20Image%202025-01-18%20at%2010.33.51%20AM%20(1).jpeg)
+   ![Hello Service deployment applied](WhatsApp%20Image%202025-01-18%20at%2010.33.51%20AM%20(2).jpeg)
 
 ---
 
